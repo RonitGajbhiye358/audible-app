@@ -32,7 +32,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
-      // Public routes (no header)
+      // Public routes 
       { 
         path: "/login", 
         element: <PublicRoute><LoginPage /></PublicRoute> 
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
         element: <PublicRoute><RegisterPage /></PublicRoute> 
       },
       
-      // Protected routes (with header)
+      // Protected routes 
       {
         children: [
           { index: true, element: <Home /> },
@@ -54,12 +54,12 @@ const router = createBrowserRouter([
         ]
       },
       
-      // Admin routes (with admin header)
+      // Admin routes 
       {
         path: "/admin",
         element: <AdminRoute><AdminLayout /></AdminRoute>,
         children: [
-          { index: true, element: <Navigate to="/admin/users" replace /> },
+          { index: true, element:<ManageUsers />},
           { path: "users", element: <ManageUsers /> },
           { path: "books", element: <ManageBooks /> },
           { path: "orders", element: <ManageOrders /> },

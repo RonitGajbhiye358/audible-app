@@ -40,8 +40,13 @@ const LoginPage = () => {
         
         // Store token in localStorage for persistence
         localStorage.setItem('token', token);
-        
-        navigate('/audiobooks');
+
+        // Force page reload to ensure all auth state is initialized
+        if (userRole === "ADMIN") {
+          window.location.href = '/admin/users'; // Using full page reload
+        } else {
+          window.location.href = '/audiobooks';
+        }
       } else {
         setError(response.data.message || 'Login failed');
       }

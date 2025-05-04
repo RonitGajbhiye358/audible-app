@@ -75,7 +75,7 @@ const ManageBooks = () => {
 
   const handleUpdateField = async (bookId, fieldName, newValue) => {
     try {
-      const response = await api.put(`/admin/audiobook/update/${bookId}`, null, {
+      const response = await api.put(`/admin/audiobook/update-price/${bookId}`, null, {
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -226,27 +226,9 @@ const ManageBooks = () => {
                 <td className="py-3 px-4">{book.title}</td>
                 <td className="py-3 px-4">{book.author}</td>
                 <td className="py-3 px-4">{book.narrator}</td>
-                <td className="py-3 px-4">
-                  <input
-                    type="number"
-                    min="1"
-                    value={book.time}
-                    onChange={(e) => handleUpdateField(book.bookId, 'time', parseInt(e.target.value))}
-                    className="w-20 border rounded px-2 py-1"
-                  />
-                </td>
+                <td className="py-3 px-4">{book.time}</td>
                 <td className="py-3 px-4">{book.language}</td>
-                <td className="py-3 px-4">
-                  <input
-                    type="number"
-                    min="0"
-                    max="5"
-                    step="0.1"
-                    value={book.stars}
-                    onChange={(e) => handleUpdateField(book.bookId, 'stars', parseFloat(e.target.value))}
-                    className="w-20 border rounded px-2 py-1"
-                  />
-                </td>
+                <td className="py-3 px-4">{book.stars}</td>
                 <td className="py-3 px-4">
                   <input
                     type="number"
