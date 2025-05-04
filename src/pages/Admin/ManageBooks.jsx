@@ -16,12 +16,15 @@ const ManageBooks = () => {
     price: 0.0,
     ratings: 0
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploading, setUploading] = useState(false);
   const token = useSelector(selectCurrentToken);
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await api.get('/audiobooks/all', {
+        const response = await api.get('/admin/all-audiobooks', {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -43,7 +46,8 @@ const ManageBooks = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setBooks([...books, response.data]);
+      const addedBook = response.data;
+      setBooks([...books, addedBook]);
       setNewBook({
         title: '',
         author: '',
@@ -55,10 +59,52 @@ const ManageBooks = () => {
         price: 0.0,
         ratings: 0
       });
+      // If a file was selected, upload it after book creation
+      if (selectedFile) {
+        await handleUploadAudio(addedBook.bookId);
+      }
     } catch (error) {
       console.error('Error adding book:', error);
     }
   };
+
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleUploadAudio = async (bookId) => {
+    if (!selectedFile) return;
+    
+    try {
+      setUploading(true);
+      setUploadProgress(0);
+      
+      const formData = new FormData();
+      formData.append('audioFile', selectedFile);
+
+      await api.post(`/admin/upload-audio/${bookId}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          const progress = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress(progress);
+        }
+      });
+
+      alert('Audio uploaded successfully!');
+      setSelectedFile(null);
+    } catch (error) {
+      console.error('Error uploading audio:', error);
+      alert('Failed to upload audio');
+    } finally {
+      setUploading(false);
+    }
+  };
+
 
   const handleDeleteBook = async (id) => {
     try {
@@ -193,12 +239,37 @@ const ManageBooks = () => {
             />
           </div>
           <div className="md:col-span-3">
+            <label className="block text-sm font-medium mb-1">Audio File</label>
+            <input
+              type="file"
+              accept="audio/*"
+              onChange={handleFileChange}
+              className="w-full border rounded px-3 py-2"
+            />
+            {selectedFile && (
+              <p className="text-sm text-gray-600 mt-1">
+                Selected: {selectedFile.name} ({Math.round(selectedFile.size / 1024)} KB)
+              </p>
+            )}
+          </div>
+
+          <div className="md:col-span-3 flex items-center gap-4">
             <button
               type="submit"
               className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              disabled={uploading}
             >
-              Add Book
+              {uploading ? 'Processing...' : 'Add Book'}
             </button>
+            
+            {uploading && (
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-blue-600 h-2.5 rounded-full" 
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            )}
           </div>
         </form>
       </div>
@@ -216,6 +287,7 @@ const ManageBooks = () => {
               <th className="py-3 px-4">Language</th>
               <th className="py-3 px-4">Rating</th>
               <th className="py-3 px-4">Price</th>
+              <th className="py-3 px-4">Audio</th>
               <th className="py-3 px-4">Actions</th>
             </tr>
           </thead>
@@ -240,6 +312,31 @@ const ManageBooks = () => {
                   />
                 </td>
                 <td className="py-3 px-4">
+                  {book.audioData ? (
+                    <span className="text-green-500">✓ Uploaded</span>
+                  ) : (
+                    <div className="relative">
+                      <input
+                        type="file"
+                        id={`audio-upload-${book.bookId}`}
+                        accept="audio/*"
+                        onChange={(e) => {
+                          setSelectedFile(e.target.files[0]);
+                          handleUploadAudio(book.bookId);
+                        }}
+                        className="hidden"
+                      />
+                      <label 
+                        htmlFor={`audio-upload-${book.bookId}`}
+                        className="text-blue-500 cursor-pointer hover:underline"
+                      >
+                        Upload
+                      </label>
+                    </div>
+                  )}
+                </td>
+                
+                <td className="py-3 px-4">
                   <button
                     onClick={() => handleDeleteBook(book.bookId)}
                     className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
@@ -257,3 +354,4 @@ const ManageBooks = () => {
 };
 
 export default ManageBooks;
+

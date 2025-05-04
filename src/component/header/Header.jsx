@@ -20,7 +20,7 @@ function Header() {
       active: !authStatus,
     },
     {
-      name: "Login",
+      name: "SignIn",
       slug: "/login",
       active: !authStatus,
     },
