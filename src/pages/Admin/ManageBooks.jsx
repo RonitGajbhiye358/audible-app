@@ -81,7 +81,7 @@ const ManageBooks = () => {
       const formData = new FormData();
       formData.append('audioFile', fileToUpload);
 
-      await api.put(`/admin/upload-audio/${bookId}`, formData, {
+      await api.post(`/admin/audiobook/upload-audio/${bookId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },

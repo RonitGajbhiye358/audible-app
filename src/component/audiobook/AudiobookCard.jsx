@@ -69,7 +69,7 @@ const AudiobookCard = ({ book }) => {
       setIsLoading(true);
       
       // Use streaming approach with axios
-      const response = await api.get(`/user/audio/${bookId}`, {
+      const response = await api.get(`/user/audiobook/audio/${bookId}`, {
         responseType: 'blob',
         onDownloadProgress: (progressEvent) => {
           // Optional: Add progress tracking if needed
