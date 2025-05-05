@@ -25,6 +25,7 @@ const PaymentPage = () => {
     }
   }, [location.state]);
 
+  // Handle the Payment button
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     if (!userId) {

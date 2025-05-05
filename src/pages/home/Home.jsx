@@ -5,29 +5,6 @@ import { useNavigate } from 'react-router-dom';
 const Home = () => {
 
   const navigate = useNavigate()
-  const featuredBooks = [
-    {
-      title: 'The Alchemist',
-      author: 'Paulo Coelho',
-      image: 'https://images.unsplash.com/photo-1544717305-996b815c338c?auto=format&fit=crop&w=400&q=80',
-      duration: '6h 45m',
-      rating: 4.8
-    },
-    {
-      title: 'Atomic Habits',
-      author: 'James Clear',
-      image: 'https://images.unsplash.com/photo-1587829741301-dc798b82b5f9?auto=format&fit=crop&w=400&q=80',
-      duration: '5h 35m',
-      rating: 4.9
-    },
-    {
-      title: 'Becoming',
-      author: 'Michelle Obama',
-      image: 'https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=400&q=80',
-      duration: '19h 3m',
-      rating: 4.7
-    },
-  ];
 
   const categories = [
     { name: 'Bestsellers', icon: <FiStar className="text-2xl" /> },
@@ -77,51 +54,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Books */}
-      <section className="py-16 px-6 md:px-12 bg-gray-50">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex justify-between items-center mb-10">
-            <h2 className="text-2xl font-bold text-gray-800">Featured Audiobooks</h2>
-            <button className="text-indigo-600 hover:text-indigo-800 font-medium">
-              View All →
-            </button>
-          </div>
-
-          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredBooks.map((book, index) => (
-              <div 
-                key={index} 
-                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition transform hover:-translate-y-1"
-              >
-                <div className="relative">
-                  <img 
-                    src={book.image} 
-                    alt={book.title} 
-                    className="w-full h-48 object-cover"
-                  />
-                  <button className="absolute bottom-4 right-4 bg-indigo-600 text-white p-3 rounded-full hover:bg-indigo-700 transition shadow-lg">
-                    <FiPlay className="text-lg" />
-                  </button>
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center mb-1">
-                    <div className="flex text-yellow-400 mr-2">
-                      <FiStar className="fill-current" />
-                      <span className="ml-1 text-gray-700 font-medium">{book.rating}</span>
-                    </div>
-                    <span className="text-gray-400 text-sm">• {book.duration}</span>
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-1">{book.title}</h3>
-                  <p className="text-gray-600 mb-4">{book.author}</p>
-                  <button className="w-full py-2 bg-indigo-50 text-indigo-600 rounded-lg font-medium hover:bg-indigo-100 transition">
-                    Add to Library
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      
     </div>
   );
 };

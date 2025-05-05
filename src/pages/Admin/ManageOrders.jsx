@@ -18,14 +18,10 @@ const ManageOrders = () => {
       setLoading(true);
       try {
         // Fetch orders (completed)
-        const ordersResponse = await api.get('/admin/orders/get-all', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const ordersResponse = await api.get('/admin/orders/get-all');
 
         // Fetch carts (pending)
-        const cartsResponse = await api.get('/admin/all/bookcarts', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        const cartsResponse = await api.get('/admin/all/bookcarts');
 
         // Combine all user IDs from both orders and carts
         const allUserIds = [
@@ -39,9 +35,7 @@ const ManageOrders = () => {
         const usersData = {};
         await Promise.all(
           allUserIds.map(async userId => {
-            const response = await api.get(`/admin/user/getByUserId/${userId}`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get(`/admin/user/getByUserId/${userId}`);
             usersData[userId] = response.data;
           })
         );
@@ -57,9 +51,7 @@ const ManageOrders = () => {
         const audiobookDetails = {};
         await Promise.all(
           allAudiobookIds.map(async id => {
-            const response = await api.get(`/audiobooks/${id}`, {
-              headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get(`/audiobooks/${id}`);
             audiobookDetails[id] = response.data;
           })
         );

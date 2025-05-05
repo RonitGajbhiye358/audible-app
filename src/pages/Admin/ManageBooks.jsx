@@ -20,15 +20,12 @@ const ManageBooks = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
   const token = useSelector(selectCurrentToken);
+  const [fileForBook, setFileForBook] = useState({}); // Track files per book
 
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await api.get('/admin/all-audiobooks', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const response = await api.get('/admin/all-audiobooks');
         setBooks(response.data);
       } catch (error) {
         console.error('Error fetching books:', error);
@@ -41,11 +38,7 @@ const ManageBooks = () => {
   const handleAddBook = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/admin/audiobook/add', newBook, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await api.post('/admin/audiobook/add', newBook,);
       const addedBook = response.data;
       setBooks([...books, addedBook]);
       setNewBook({
@@ -68,23 +61,28 @@ const ManageBooks = () => {
     }
   };
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+  const handleFileChange = (e, bookId = null) => {
+    const file = e.target.files[0];
+    if (bookId) {
+      setFileForBook(prev => ({ ...prev, [bookId]: file }));
+    } else {
+      setSelectedFile(file);
+    }
   };
 
   const handleUploadAudio = async (bookId) => {
-    if (!selectedFile) return;
+    const fileToUpload = fileForBook[bookId] || selectedFile;
+    if (!fileToUpload) return;
     
     try {
       setUploading(true);
       setUploadProgress(0);
       
       const formData = new FormData();
-      formData.append('audioFile', selectedFile);
+      formData.append('audioFile', fileToUpload);
 
-      await api.post(`/admin/upload-audio/${bookId}`, formData, {
+      await api.put(`/admin/upload-audio/${bookId}`, formData, {
         headers: {
-          Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         },
         onUploadProgress: (progressEvent) => {
@@ -95,8 +93,21 @@ const ManageBooks = () => {
         }
       });
 
+      // Update the book's audio status in state
+      setBooks(books.map(book => 
+        book.bookId === bookId ? { ...book, audioData: true } : book
+      )); 
       alert('Audio uploaded successfully!');
-      setSelectedFile(null);
+      // Clear the appropriate file state
+      if (fileForBook[bookId]) {
+        setFileForBook(prev => {
+          const newState = { ...prev };
+          delete newState[bookId];
+          return newState;
+        });
+      } else {
+        setSelectedFile(null);
+      }
     } catch (error) {
       console.error('Error uploading audio:', error);
       alert('Failed to upload audio');
@@ -108,11 +119,7 @@ const ManageBooks = () => {
 
   const handleDeleteBook = async (id) => {
     try {
-      await api.delete(`/admin/audiobook/delete/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      await api.delete(`/admin/audiobook/delete/${id}`);
       setBooks(books.filter(book => book.bookId !== id));
     } catch (error) {
       console.error('Error deleting book:', error);
@@ -122,9 +129,6 @@ const ManageBooks = () => {
   const handleUpdateField = async (bookId, fieldName, newValue) => {
     try {
       const response = await api.put(`/admin/audiobook/update-price/${bookId}`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
         params: { [fieldName]: newValue }
       });
       setBooks(books.map(book => 
@@ -320,10 +324,7 @@ const ManageBooks = () => {
                         type="file"
                         id={`audio-upload-${book.bookId}`}
                         accept="audio/*"
-                        onChange={(e) => {
-                          setSelectedFile(e.target.files[0]);
-                          handleUploadAudio(book.bookId);
-                        }}
+                        onChange={(e) => handleFileChange(e, book.bookId)}
                         className="hidden"
                       />
                       <label 
@@ -332,6 +333,14 @@ const ManageBooks = () => {
                       >
                         Upload
                       </label>
+                      {fileForBook[book.bookId] && (
+                        <button 
+                          onClick={() => handleUploadAudio(book.bookId)}
+                          className="ml-2 bg-green-500 text-white px-2 py-1 rounded text-sm"
+                        >
+                          Confirm
+                        </button>
+                      )}
                     </div>
                   )}
                 </td>

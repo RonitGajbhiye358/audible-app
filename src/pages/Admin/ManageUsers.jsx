@@ -10,11 +10,7 @@ const ManageUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await api.get('/admin/getAllUsers', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const response = await api.get('/admin/getAllUsers');
         setUsers(response.data);
       } catch (error) {
         console.error('Error fetching users:', error);
@@ -26,11 +22,7 @@ const ManageUsers = () => {
 
   const deleteUser = async (customerId) => {
     try {
-      await api.delete(`/admin/user/${customerId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      await api.delete(`/admin/user/${customerId}`);
       setUsers(users.filter(user => user.customerId !== customerId));
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -40,9 +32,6 @@ const ManageUsers = () => {
   const updateUserRole = async (customerId, role) => {
     try {
       await api.put(`/admin/user/update-role/${customerId}`, null, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
         params: { role }
       });
       setUsers(users.map(user => 

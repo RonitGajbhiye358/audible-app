@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
 import {
-  selectIsAuthenticated,
   initializeAuth,
   selectCurrentUserRole
 } from "./app/authSlice";
@@ -15,7 +14,6 @@ function App() {
   const dispatch = useDispatch();
   const userRole = useSelector(selectCurrentUserRole);
   const location = useLocation();
-  const [authInitialized, setAuthInitialized] = useState(false);
   const isAdminRoute = location.pathname.startsWith("/admin");
 
   // Initialize authentication
@@ -23,8 +21,8 @@ function App() {
     const initAuth = async () => {
       try {
         dispatch(initializeAuth());
-      } finally {
-        setAuthInitialized(true);
+      } catch(err) {
+        console.log("error occured :",err)
       }
     };
     initAuth();
@@ -43,13 +41,6 @@ function App() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // if (!authInitialized) {
-  //   return (
-  //     <div className="flex items-center justify-center h-screen">
-  //       <LoadingSpinner size="lg" />
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="min-h-screen flex flex-col">
