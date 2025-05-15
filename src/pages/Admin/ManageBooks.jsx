@@ -56,6 +56,7 @@ const ManageBooks = () => {
       if (selectedFile) {
         await handleUploadAudio(addedBook.bookId);
       }
+      window.location.reload();
     } catch (error) {
       console.error('Error adding book:', error);
     }
